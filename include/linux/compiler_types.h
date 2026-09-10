@@ -307,7 +307,11 @@ struct ftrace_likely_data {
  * __bdos on clang < 19.1.3 can be off by 4:
  * https://github.com/llvm/llvm-project/pull/112636
  */
-#ifdef CONFIG_CC_HAS_COUNTED_BY
+/*
+ * counted_by adds bounds metadata without changing member layout. Keep it out
+ * of genksyms so upgrading Clang does not change the Android GKI module CRCs.
+ */
+#if defined(CONFIG_CC_HAS_COUNTED_BY) && !defined(__GENKSYMS__)
 # define __counted_by(member)		__attribute__((__counted_by__(member)))
 #else
 # define __counted_by(member)
